@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Stack struct {
@@ -146,6 +147,32 @@ func (n *Node) PrintInOrderIterative() {
 	}
 }
 
+func (n *Node) PrintPreOrderTreeEdges(sb *strings.Builder, padding, pointer string) {
+	if n == nil {
+		return
+	}
+	sb.WriteString(padding)
+	sb.WriteString(pointer)
+	sb.WriteString(fmt.Sprintf("%d", n.Key))
+	sb.WriteString("\n")
+
+	var paddingBuilder strings.Builder
+	paddingBuilder.WriteString(padding)
+	paddingBuilder.WriteString("│  ")
+
+	paddingForBoth := paddingBuilder.String()
+	pointerForRight := "└──"
+	var pointerForLeft string
+	if n.Right != nil {
+		pointerForLeft = "├──"
+	} else {
+		pointerForLeft = "└──"
+	}
+
+	n.Left.PrintPreOrderTreeEdges(sb, paddingForBoth, pointerForLeft)
+	n.Right.PrintPreOrderTreeEdges(sb, paddingForBoth, pointerForRight)
+}
+
 func main() {
 	tree := &Node{Key: 100}
 	tree.Insert(50)
@@ -180,6 +207,12 @@ func main() {
 
 	fmt.Printf("\nPrinting tree in in-order Iterative\n")
 	tree.PrintInOrderIterative()
+	fmt.Println()
+
+	fmt.Printf("\nPrinting tree in pre-order with Tree Edges\n")
+	var sb strings.Builder
+	tree.PrintPreOrderTreeEdges(&sb, "", "")
+	fmt.Println(sb.String())
 	fmt.Println()
 
 	fmt.Printf("\nSearching keys...")
